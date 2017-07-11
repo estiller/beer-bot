@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using BeerBot.BeerApi.Client.Models;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 
@@ -43,7 +44,8 @@ namespace BeerBot.Dialogs
             }
             else if (Regex.IsMatch(message.Text, ".*recommend.*", RegexOptions.IgnoreCase))
             {
-                await context.PostAsync("Recommendations are almost here!");
+                context.Call(RecommendationDialog.Dialog, BeerRecommendedAsync);
+                return;
             }
             else if (Regex.IsMatch(message.Text, "^help.*", RegexOptions.IgnoreCase))
             {
@@ -60,6 +62,21 @@ namespace BeerBot.Dialogs
                 await context.PostAsync("I don't quite understand. Please type 'help' for getting acquianted with me.");
             }
             context.Wait(MessageReceivedAsync);
+        }
+
+        private async Task BeerRecommendedAsync(IDialogContext context, IAwaitable<Beer> argument)
+        {
+            var beer = await argument;
+            PromptDialog.Confirm(context, async (ctx, res) =>
+            {
+                bool shouldOrder = await res;
+                if (shouldOrder)
+                {
+                    await ctx.PostAsync("Ordering will be available soon!");
+                }
+                await ctx.PostAsync("So what would you like to do next?");
+                ctx.Wait(MessageReceivedAsync);
+            }, $"Would you like to order '{beer.Name}'?");
         }
     }
 }
