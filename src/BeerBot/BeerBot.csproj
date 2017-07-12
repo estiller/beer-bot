@@ -140,6 +140,7 @@
     <Compile Include="BeerApi.Client\[Generated]\Models\Brewery.cs" />
     <Compile Include="BeerApi.Client\[Generated]\Models\Category.cs" />
     <Compile Include="BeerApi.Client\[Generated]\Models\Style.cs" />
+    <Compile Include="Dialogs\OrderDialog.cs" />
     <Compile Include="Dialogs\RecommendationDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
