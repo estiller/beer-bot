@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 using BeerBot.BeerApi.Client;
 using BeerBot.BeerApi.Client.Models;
 using BeerBot.Extensions;
+using BeerBot.Services;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector;
 
 namespace BeerBot.Dialogs
 {
     public static class RecommendationDialog
     {
         private static readonly IBeerAPI BeerApiClient = new BeerAPI(new Uri(ConfigurationManager.AppSettings["BeerApiUrl"]));
+        private static readonly IImageSearchService ImageSearchService = new ImageSearchService();
 
         public static readonly IDialog<Beer> Dialog = Chain
             .From(() => new PromptDialog.PromptChoice<RecommendationOptions>(
@@ -26,7 +29,19 @@ namespace BeerBot.Dialogs
                 Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Origin, (context, option) => CountryRecommendation),
                 Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Name, (context, option) => NameRecommendation)
             )
-            .Unwrap();
+            .Unwrap()
+            .ContinueWith(async (context, beerAwaitable) =>
+            {
+                var chosenBeer = await beerAwaitable;
+                Uri imageUrl = await ImageSearchService.SearchImage($"{chosenBeer.Name} beer");
+                var card = new HeroCard("Your beer!", chosenBeer.Name, chosenBeer.Description, new List<CardImage> { new CardImage(imageUrl.ToString()) });
+
+                var message = context.MakeMessage();
+                message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+                message.Attachments = new List<Attachment> {card.ToAttachment()};
+                await context.PostAsync(message);
+                return Chain.Return(chosenBeer);
+            });
 
         private enum RecommendationOptions
         {
@@ -85,10 +100,11 @@ namespace BeerBot.Dialogs
                     await context.PostAsync("Oops! I havn't found any beer!");
                     return retryDialog;
                 case 1:
-                    await context.PostAsync($"Eureka! This is the beer for you: '{recommendation[0].Name}'");
+                    await context.PostAsync("Eureka! I've got a beer for you");
                     return Chain.Return(recommendation[0]);
+                default:
+                    return new PromptDialog.PromptChoice<Beer>(recommendation, "Which one of these works?", "I probably drank too much. Which one of these work?", 3);
             }
-            return new PromptDialog.PromptChoice<Beer>(recommendation, "Which one of these works?", "I probably drank too much. Which one of these work?", 3);
         }
     }
 }
