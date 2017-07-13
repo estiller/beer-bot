@@ -11,6 +11,7 @@ namespace BeerBot.Dialogs
     [Serializable]
     public class RootDialog : IDialog
     {
+        private const string LastBeerOrderedKeyName = "LastBeerOrdered";
         private Beer _recommendedBeer;
 
         public Task StartAsync(IDialogContext context)
@@ -24,8 +25,15 @@ namespace BeerBot.Dialogs
             var message = await argument;
             if (Regex.IsMatch(message.Text, "^(hi|hello|hola).*", RegexOptions.IgnoreCase))
             {
-                await context.PostAsync("Howdy! How can I help you?");
-                context.Wait(MessageReceivedAsync);
+                if (context.UserData.TryGetValue(LastBeerOrderedKeyName, out string beerName))
+                {
+                    PromptDialog.Confirm(context, ConfirmOrderLastKnownBeerAsync, $"Would you like to order your usual {beerName}?");
+                }
+                else
+                {
+                    await context.PostAsync("Howdy! How can I help you?");
+                    context.Wait(MessageReceivedAsync);
+                }
             }
             else if (Regex.IsMatch(message.Text, "^(bye|adios).*", RegexOptions.IgnoreCase))
             {
@@ -35,6 +43,20 @@ namespace BeerBot.Dialogs
             else
             {
                 await MessageReceivedAsync(context, argument);
+            }
+        }
+
+        private async Task ConfirmOrderLastKnownBeerAsync(IDialogContext context, IAwaitable<bool> isConfirmed)
+        {
+            if (await isConfirmed)
+            {
+                var beerName = context.UserData.GetValue<string>(LastBeerOrderedKeyName);
+                context.Call(OrderDialog.CreateDialog(beerName), BeerOrderedAsync);
+            }
+            else
+            {
+                await context.PostAsync("No problem. So how can I help you?");
+                context.Wait(MessageReceivedAsync);
             }
         }
 
@@ -72,6 +94,7 @@ namespace BeerBot.Dialogs
         {
             var beerOrder = await result;
             await context.PostAsync($"Your order of {beerOrder.BeerName} and {beerOrder.Chaser} with {beerOrder.Side} is coming right up!");
+            context.UserData.SetValue(LastBeerOrderedKeyName, beerOrder.BeerName);
             await context.PostAsync("So what would you like to do next?");
             context.Wait(MessageReceivedAsync);
         }
