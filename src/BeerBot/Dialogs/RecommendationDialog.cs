@@ -32,6 +32,11 @@ namespace BeerBot.Dialogs
             .Unwrap()
             .ContinueWith(async (context, beerAwaitable) =>
             {
+                var typingMessage = context.MakeMessage();
+                typingMessage.Type = ActivityTypes.Typing;
+                await context.PostAsync(typingMessage);
+                await Task.Delay(1000);   // Make it look like we're typing a lot
+
                 var chosenBeer = await beerAwaitable;
                 Uri imageUrl = await ImageSearchService.SearchImage($"{chosenBeer.Name} beer");
                 var card = new HeroCard("Your beer!", chosenBeer.Name, chosenBeer.Description, new List<CardImage> { new CardImage(imageUrl.ToString()) });
