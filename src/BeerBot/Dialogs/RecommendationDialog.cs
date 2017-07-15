@@ -115,7 +115,7 @@ namespace BeerBot.Dialogs
             Debug.Assert(breweries.Count > 0, "There is no country in the list with zero breweries!");
             if (breweries.Count == 1)
             {
-                await context.PostAsync($"Then you need a beer made by {breweries[0].Name}");
+                await context.SpeakAsync($"Then you need a beer made by {breweries[0].Name}");
                 return Chain.Return(breweries[0]);
             }
             return new PromptDialog.PromptChoice<Brewery>(breweries, "Which brewery?", "I probably drank too much. Which brewery was it?", 3);
@@ -128,10 +128,10 @@ namespace BeerBot.Dialogs
             switch (recommendation.Count)
             {
                 case 0:
-                    await context.PostAsync("Oops! I havn't found any beer!");
+                    await context.SpeakAsync("Oops! I havn't found any beer!");
                     return retryDialog ?? Chain.Return<Beer>(null);
                 case 1:
-                    await context.PostAsync("Eureka! I've got a beer for you");
+                    await context.SpeakAsync("Eureka! I've got a beer for you");
                     return Chain.Return(recommendation[0]);
                 default:
                     return new PromptDialog.PromptChoice<Beer>(recommendation, "Which one of these works?", "I probably drank too much. Which one of these work?", 3);

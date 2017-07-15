@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BeerBot.BeerApi.Client.Models;
+using BeerBot.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 
@@ -31,13 +32,13 @@ namespace BeerBot.Dialogs
                 }
                 else
                 {
-                    await context.PostAsync("Howdy! How can I help you?");
+                    await context.SpeakAsync("Howdy! How can I help you?", InputHints.ExpectingInput);
                     context.Wait(MessageReceivedAsync);
                 }
             }
             else if (Regex.IsMatch(message.Text, "^(bye|adios).*", RegexOptions.IgnoreCase))
             {
-                await context.PostAsync("So soon? Oh well. See you later :)");
+                await context.SpeakAsync("So soon? Oh well. See you later :)", InputHints.ExpectingInput);
                 context.Done(true);
             }
             else
@@ -55,7 +56,7 @@ namespace BeerBot.Dialogs
             }
             else
             {
-                await context.PostAsync("No problem. So how can I help you?");
+                await context.SpeakAsync("No problem. So how can I help you?", InputHints.ExpectingInput);
                 context.Wait(MessageReceivedAsync);
             }
         }
@@ -75,17 +76,17 @@ namespace BeerBot.Dialogs
             }
             if (Regex.IsMatch(message.Text, "^help.*", RegexOptions.IgnoreCase))
             {
-                await context.PostAsync("You can type 'order' for ordering beers and 'recommend' for getting some recommendations");
+                await context.SpeakAsync("You can type 'order' for ordering beers and 'recommend' for getting some recommendations", InputHints.ExpectingInput);
                 context.Wait(MessageReceivedAsync);
             }
             else if (Regex.IsMatch(message.Text, "^(bye|adios).*", RegexOptions.IgnoreCase))
             {
-                await context.PostAsync("Thank you. Come again!");
+                await context.SpeakAsync("Thank you. Come again!", InputHints.ExpectingInput);
                 context.Done(true);
             }
             else
             {
-                await context.PostAsync("I don't quite understand. Please type 'help' for getting acquianted with me.");
+                await context.SpeakAsync("I don't quite understand. Say 'help' for getting acquianted with me.", InputHints.ExpectingInput);
                 context.Wait(MessageReceivedAsync);
             }
         }
@@ -93,9 +94,9 @@ namespace BeerBot.Dialogs
         private async Task BeerOrderedAsync(IDialogContext context, IAwaitable<BeerOrder> result)
         {
             var beerOrder = await result;
-            await context.PostAsync($"Your order of {beerOrder.BeerName} and {beerOrder.Chaser} with {beerOrder.Side} is coming right up!");
+            await context.SpeakAsync($"Your order of {beerOrder.BeerName} and {beerOrder.Chaser} with {beerOrder.Side} is coming right up!");
             context.UserData.SetValue(LastBeerOrderedKeyName, beerOrder.BeerName);
-            await context.PostAsync("So what would you like to do next?");
+            await context.SpeakAsync("So what would you like to do next?", InputHints.ExpectingInput);
             context.Wait(MessageReceivedAsync);
         }
 
@@ -117,7 +118,7 @@ namespace BeerBot.Dialogs
             }
             else
             {
-                await context.PostAsync("So what would you like to do next?");
+                await context.SpeakAsync("So what would you like to do next?", InputHints.ExpectingInput);
                 context.Wait(MessageReceivedAsync);
             }
             _recommendedBeer = null;

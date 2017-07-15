@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using BeerBot.BeerApi.Client.Models;
+using BeerBot.Extensions;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
@@ -42,21 +43,21 @@ namespace BeerBot.Dialogs
         [LuisIntent("None")]
         public async Task OnIntentUnidentifiedAsync(IDialogContext context, IAwaitable<IMessageActivity> messageAwaitable, LuisResult luisResult)
         {
-            await context.PostAsync("I'm sorry, I didn't get that. How can I help you?");
+            await context.SpeakAsync("I'm sorry, I didn't get that. How can I help you?", InputHints.ExpectingInput);
             context.Wait(MessageReceived);
         }
 
         [LuisIntent("GetHelp")]
         public async Task OnGetHelpAsync(IDialogContext context, IAwaitable<IMessageActivity> messageAwaitable, LuisResult luisResult)
         {
-            await context.PostAsync("I can recommend a beer for you, or you can go ahead and make an order.");
+            await context.SpeakAsync("I can recommend a beer for you, or you can go ahead and make an order.", InputHints.ExpectingInput);
             context.Wait(MessageReceived);
         }
 
         [LuisIntent("Bye")]
         public async Task OnByeAsync(IDialogContext context, IAwaitable<IMessageActivity> messageAwaitable, LuisResult luisResult)
         {
-            await context.PostAsync("Bye bye. See you soon!");
+            await context.SpeakAsync("Bye bye. See you soon!", InputHints.IgnoringInput);
             context.Done((object) null);
         }
 
@@ -69,7 +70,7 @@ namespace BeerBot.Dialogs
             }
             else
             {
-                await context.PostAsync("Howdy! How can I help you?");
+                await context.SpeakAsync("Howdy! How can I help you?", InputHints.ExpectingInput);
                 context.Wait(MessageReceived);
             }
         }
@@ -106,7 +107,7 @@ namespace BeerBot.Dialogs
             }
             else
             {
-                await context.PostAsync("No problem. So how can I help you?");
+                await context.SpeakAsync("No problem. So how can I help you?", InputHints.ExpectingInput);
                 context.Wait(MessageReceived);
             }
         }
@@ -114,9 +115,9 @@ namespace BeerBot.Dialogs
         private async Task BeerOrderedAsync(IDialogContext context, IAwaitable<BeerOrder> result)
         {
             var beerOrder = await result;
-            await context.PostAsync($"Your order of {beerOrder.BeerName} and {beerOrder.Chaser} with {beerOrder.Side} is coming right up!");
+            await context.SpeakAsync($"Your order of {beerOrder.BeerName} and {beerOrder.Chaser} with {beerOrder.Side} is coming right up!");
             context.UserData.SetValue(LastBeerOrderedKeyName, beerOrder.BeerName);
-            await context.PostAsync("So what would you like to do next?");
+            await context.SpeakAsync("So what would you like to do next?", InputHints.ExpectingInput);
             context.Wait(MessageReceived);
         }
 
@@ -131,7 +132,7 @@ namespace BeerBot.Dialogs
             }
 
             // Can't use anonymous method as anonymous method which capture environment artifacts are not serializable
-            PromptDialog.Confirm(context, CompleteBeerRecommendationAsync, $"Would you like to order '{_recommendedBeer.Name}'?");
+            PromptDialog.Confirm(context, CompleteBeerRecommendationAsync, $"Would you like to order '{_recommendedBeer.Name}'?", InputHints.ExpectingInput);
         }
 
         private async Task CompleteBeerRecommendationAsync(IDialogContext context, IAwaitable<bool> shouldOrder)
@@ -143,7 +144,7 @@ namespace BeerBot.Dialogs
             }
             else
             {
-                await context.PostAsync("So what would you like to do next?");
+                await context.SpeakAsync("So what would you like to do next?", InputHints.ExpectingInput);
                 context.Wait(MessageReceived);
             }
             _recommendedBeer = null;
