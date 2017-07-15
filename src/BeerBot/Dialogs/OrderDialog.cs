@@ -42,9 +42,11 @@ namespace BeerBot.Dialogs
     {
         private static readonly IBeerAPI BeerApiClient = new BeerAPI(new Uri(ConfigurationManager.AppSettings["BeerApiUrl"]));
 
-        public static IDialog<BeerOrder> CreateDialog(string beerName = null)
+        public static IDialog<BeerOrder> CreateDialog(string beerName = null, string chaser = null, string sideDish = null)
         {
-            return new FormDialog<BeerOrder>(new BeerOrder {BeerName = beerName }, BuildForm, FormOptions.PromptInStart);
+            Enum.TryParse(chaser, true, out Chaser chaserEnum);
+            Enum.TryParse(sideDish, true, out SideDish sideDishEnum);
+            return new FormDialog<BeerOrder>(new BeerOrder {BeerName = beerName, Chaser = chaserEnum, Side = sideDishEnum}, BuildForm, FormOptions.PromptInStart);
         }
 
         private static IForm<BeerOrder> BuildForm()
@@ -81,6 +83,7 @@ namespace BeerBot.Dialogs
                     };
                 })
                 .AddRemainingFields()
+                .Confirm("Just making sure, is this what you wanted? {*}")
                 .Build();
         }
     }

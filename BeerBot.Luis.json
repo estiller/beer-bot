@@ -1,0 +1,509 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.1",
+  "name": "BeerBot",
+  "desc": "",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "Bye"
+    },
+    {
+      "name": "GetHelp"
+    },
+    {
+      "name": "Greet"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "OrderBeer"
+    },
+    {
+      "name": "RecommendBeer"
+    }
+  ],
+  "entities": [
+    {
+      "name": "beername"
+    },
+    {
+      "name": "brewery"
+    }
+  ],
+  "composites": [],
+  "closedLists": [
+    {
+      "name": "category",
+      "subLists": [
+        {
+          "canonicalForm": "british ale",
+          "list": []
+        },
+        {
+          "canonicalForm": "irish ale",
+          "list": []
+        },
+        {
+          "canonicalForm": "north american ale",
+          "list": [
+            "american ale"
+          ]
+        },
+        {
+          "canonicalForm": "german ale",
+          "list": []
+        },
+        {
+          "canonicalForm": "belgian and french ale",
+          "list": [
+            "belgian ale",
+            "french ale"
+          ]
+        },
+        {
+          "canonicalForm": "international ale",
+          "list": []
+        },
+        {
+          "canonicalForm": "german lager",
+          "list": []
+        },
+        {
+          "canonicalForm": "north american lager",
+          "list": [
+            "american lager"
+          ]
+        },
+        {
+          "canonicalForm": "other lager",
+          "list": []
+        },
+        {
+          "canonicalForm": "international lager",
+          "list": []
+        }
+      ]
+    },
+    {
+      "name": "chaser",
+      "subLists": [
+        {
+          "canonicalForm": "whiskey",
+          "list": [
+            "bourbon",
+            "scotch"
+          ]
+        },
+        {
+          "canonicalForm": "vodka",
+          "list": []
+        },
+        {
+          "canonicalForm": "liquor",
+          "list": []
+        },
+        {
+          "canonicalForm": "water",
+          "list": []
+        }
+      ]
+    },
+    {
+      "name": "country",
+      "subLists": [
+        {
+          "canonicalForm": "united states",
+          "list": [
+            "american",
+            "us"
+          ]
+        },
+        {
+          "canonicalForm": "argentina",
+          "list": [
+            "argentinian"
+          ]
+        },
+        {
+          "canonicalForm": "united kingdom",
+          "list": [
+            "english",
+            "british",
+            "uk"
+          ]
+        },
+        {
+          "canonicalForm": "canada",
+          "list": [
+            "canadian"
+          ]
+        },
+        {
+          "canonicalForm": "columbia",
+          "list": [
+            "colombian",
+            "columbian"
+          ]
+        },
+        {
+          "canonicalForm": "south korea",
+          "list": [
+            "south korean",
+            "korean"
+          ]
+        },
+        {
+          "canonicalForm": "australia",
+          "list": [
+            "australian",
+            "aussie",
+            "ozzie"
+          ]
+        },
+        {
+          "canonicalForm": "israel",
+          "list": [
+            "israeli",
+            "hebrew"
+          ]
+        },
+        {
+          "canonicalForm": "germany",
+          "list": [
+            "german",
+            "deutsch"
+          ]
+        },
+        {
+          "canonicalForm": "Netherlands",
+          "list": [
+            "dutch"
+          ]
+        },
+        {
+          "canonicalForm": "belgium",
+          "list": [
+            "belgian"
+          ]
+        },
+        {
+          "canonicalForm": "ireland",
+          "list": [
+            "irish"
+          ]
+        },
+        {
+          "canonicalForm": "austria",
+          "list": [
+            "austrian"
+          ]
+        },
+        {
+          "canonicalForm": "poland",
+          "list": [
+            "polish",
+            "polskie"
+          ]
+        },
+        {
+          "canonicalForm": "sweden",
+          "list": [
+            "swedish"
+          ]
+        },
+        {
+          "canonicalForm": "norway",
+          "list": [
+            "norwegian"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sidedish",
+      "subLists": [
+        {
+          "canonicalForm": "fries",
+          "list": [
+            "chips",
+            "fried potatoes"
+          ]
+        },
+        {
+          "canonicalForm": "pretzels",
+          "list": []
+        },
+        {
+          "canonicalForm": "nachos",
+          "list": []
+        }
+      ]
+    }
+  ],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "hello",
+      "intent": "Greet",
+      "entities": []
+    },
+    {
+      "text": "hi",
+      "intent": "Greet",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "give me a beer",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "i want a beer",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "i'm leaving",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "adios",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "goodbye",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "bye",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "hey there",
+      "intent": "Greet",
+      "entities": []
+    },
+    {
+      "text": "see you later",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "help me please",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "howdy",
+      "intent": "Greet",
+      "entities": []
+    },
+    {
+      "text": "options",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what can i do here?",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "what do you recommend?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "what are my options?",
+      "intent": "GetHelp",
+      "entities": []
+    },
+    {
+      "text": "i'd like to order",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "see u later",
+      "intent": "Bye",
+      "entities": []
+    },
+    {
+      "text": "i'd like to order a beer",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "what do you think i should get?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "can you recommend a beer for me?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "i want a heineken and some pretzels",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 9,
+          "endPos": 16
+        }
+      ]
+    },
+    {
+      "text": "give me some beer with fries and water",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "i'd like to order a tuborg and nachos",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 20,
+          "endPos": 25
+        }
+      ]
+    },
+    {
+      "text": "give me a budweiser with vodka and fries",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 10,
+          "endPos": 18
+        }
+      ]
+    },
+    {
+      "text": "i want an israeli beer",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "i want an american beer please with fries and vodka",
+      "intent": "OrderBeer",
+      "entities": []
+    },
+    {
+      "text": "do you have any beers by tempo?",
+      "intent": "RecommendBeer",
+      "entities": [
+        {
+          "entity": "brewery",
+          "startPos": 25,
+          "endPos": 29
+        }
+      ]
+    },
+    {
+      "text": "what german lager do you have?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "i like british ale beer",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "can you recommend on a german beer",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "which french beers do you have?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "which french beer do you have?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "what french beers do you have?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "what french beer do you have?",
+      "intent": "RecommendBeer",
+      "entities": []
+    },
+    {
+      "text": "hey there! how are you?",
+      "intent": "Greet",
+      "entities": []
+    },
+    {
+      "text": "i would like a heineken with fries",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 15,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "i would like a tuborg with vodka and fries",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 15,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "i would like a beer with vodka and pretzels",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 15,
+          "endPos": 18
+        }
+      ]
+    },
+    {
+      "text": "i'd like an edelweiss beer with whiskey and pretzels",
+      "intent": "OrderBeer",
+      "entities": [
+        {
+          "entity": "beername",
+          "startPos": 12,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "i would like to order beer with chips",
+      "intent": "OrderBeer",
+      "entities": []
+    }
+  ]
+}

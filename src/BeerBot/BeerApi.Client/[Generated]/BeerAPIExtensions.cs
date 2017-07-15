@@ -23,17 +23,25 @@ namespace BeerBot.BeerApi.Client
             /// </param>
             /// <param name='breweryId'>
             /// </param>
+            /// <param name='breweryName'>
+            /// </param>
+            /// <param name='country'>
+            /// </param>
             /// <param name='categoryId'>
             /// </param>
+            /// <param name='categoryName'>
+            /// </param>
             /// <param name='styleId'>
+            /// </param>
+            /// <param name='styleName'>
             /// </param>
             /// <param name='minAbv'>
             /// </param>
             /// <param name='maxAbv'>
             /// </param>
-            public static IList<Beer> BeersGet(this IBeerAPI operations, IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<int?> categoryId = default(IList<int?>), IList<int?> styleId = default(IList<int?>), double? minAbv = default(double?), double? maxAbv = default(double?))
+            public static IList<Beer> BeersGet(this IBeerAPI operations, IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<string> breweryName = default(IList<string>), IList<string> country = default(IList<string>), IList<int?> categoryId = default(IList<int?>), IList<string> categoryName = default(IList<string>), IList<int?> styleId = default(IList<int?>), IList<string> styleName = default(IList<string>), double? minAbv = default(double?), double? maxAbv = default(double?))
             {
-                return operations.BeersGetAsync(searchTerm, breweryId, categoryId, styleId, minAbv, maxAbv).GetAwaiter().GetResult();
+                return operations.BeersGetAsync(searchTerm, breweryId, breweryName, country, categoryId, categoryName, styleId, styleName, minAbv, maxAbv).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -43,9 +51,17 @@ namespace BeerBot.BeerApi.Client
             /// </param>
             /// <param name='breweryId'>
             /// </param>
+            /// <param name='breweryName'>
+            /// </param>
+            /// <param name='country'>
+            /// </param>
             /// <param name='categoryId'>
             /// </param>
+            /// <param name='categoryName'>
+            /// </param>
             /// <param name='styleId'>
+            /// </param>
+            /// <param name='styleName'>
             /// </param>
             /// <param name='minAbv'>
             /// </param>
@@ -54,9 +70,9 @@ namespace BeerBot.BeerApi.Client
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<Beer>> BeersGetAsync(this IBeerAPI operations, IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<int?> categoryId = default(IList<int?>), IList<int?> styleId = default(IList<int?>), double? minAbv = default(double?), double? maxAbv = default(double?), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<Beer>> BeersGetAsync(this IBeerAPI operations, IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<string> breweryName = default(IList<string>), IList<string> country = default(IList<string>), IList<int?> categoryId = default(IList<int?>), IList<string> categoryName = default(IList<string>), IList<int?> styleId = default(IList<int?>), IList<string> styleName = default(IList<string>), double? minAbv = default(double?), double? maxAbv = default(double?), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.BeersGetWithHttpMessagesAsync(searchTerm, breweryId, categoryId, styleId, minAbv, maxAbv, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.BeersGetWithHttpMessagesAsync(searchTerm, breweryId, breweryName, country, categoryId, categoryName, styleId, styleName, minAbv, maxAbv, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

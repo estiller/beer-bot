@@ -144,9 +144,17 @@ namespace BeerBot.BeerApi.Client
         /// </param>
         /// <param name='breweryId'>
         /// </param>
+        /// <param name='breweryName'>
+        /// </param>
+        /// <param name='country'>
+        /// </param>
         /// <param name='categoryId'>
         /// </param>
+        /// <param name='categoryName'>
+        /// </param>
         /// <param name='styleId'>
+        /// </param>
+        /// <param name='styleName'>
         /// </param>
         /// <param name='minAbv'>
         /// </param>
@@ -167,7 +175,7 @@ namespace BeerBot.BeerApi.Client
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<IList<Beer>>> BeersGetWithHttpMessagesAsync(IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<int?> categoryId = default(IList<int?>), IList<int?> styleId = default(IList<int?>), double? minAbv = default(double?), double? maxAbv = default(double?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<IList<Beer>>> BeersGetWithHttpMessagesAsync(IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<string> breweryName = default(IList<string>), IList<string> country = default(IList<string>), IList<int?> categoryId = default(IList<int?>), IList<string> categoryName = default(IList<string>), IList<int?> styleId = default(IList<int?>), IList<string> styleName = default(IList<string>), double? minAbv = default(double?), double? maxAbv = default(double?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -178,8 +186,12 @@ namespace BeerBot.BeerApi.Client
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("searchTerm", searchTerm);
                 tracingParameters.Add("breweryId", breweryId);
+                tracingParameters.Add("breweryName", breweryName);
+                tracingParameters.Add("country", country);
                 tracingParameters.Add("categoryId", categoryId);
+                tracingParameters.Add("categoryName", categoryName);
                 tracingParameters.Add("styleId", styleId);
+                tracingParameters.Add("styleName", styleName);
                 tracingParameters.Add("minAbv", minAbv);
                 tracingParameters.Add("maxAbv", maxAbv);
                 tracingParameters.Add("cancellationToken", cancellationToken);
@@ -217,6 +229,34 @@ namespace BeerBot.BeerApi.Client
                     }
                 }
             }
+            if (breweryName != null)
+            {
+                if (breweryName.Count == 0)
+                {
+                    _queryParameters.Add(string.Format("breweryName={0}", System.Uri.EscapeDataString(string.Empty)));
+                }
+                else
+                {
+                    foreach (var _item in breweryName)
+                    {
+                        _queryParameters.Add(string.Format("breweryName={0}", System.Uri.EscapeDataString("" + _item)));
+                    }
+                }
+            }
+            if (country != null)
+            {
+                if (country.Count == 0)
+                {
+                    _queryParameters.Add(string.Format("country={0}", System.Uri.EscapeDataString(string.Empty)));
+                }
+                else
+                {
+                    foreach (var _item in country)
+                    {
+                        _queryParameters.Add(string.Format("country={0}", System.Uri.EscapeDataString("" + _item)));
+                    }
+                }
+            }
             if (categoryId != null)
             {
                 if (categoryId.Count == 0)
@@ -231,6 +271,20 @@ namespace BeerBot.BeerApi.Client
                     }
                 }
             }
+            if (categoryName != null)
+            {
+                if (categoryName.Count == 0)
+                {
+                    _queryParameters.Add(string.Format("categoryName={0}", System.Uri.EscapeDataString(string.Empty)));
+                }
+                else
+                {
+                    foreach (var _item in categoryName)
+                    {
+                        _queryParameters.Add(string.Format("categoryName={0}", System.Uri.EscapeDataString("" + _item)));
+                    }
+                }
+            }
             if (styleId != null)
             {
                 if (styleId.Count == 0)
@@ -242,6 +296,20 @@ namespace BeerBot.BeerApi.Client
                     foreach (var _item in styleId)
                     {
                         _queryParameters.Add(string.Format("styleId={0}", System.Uri.EscapeDataString("" + _item)));
+                    }
+                }
+            }
+            if (styleName != null)
+            {
+                if (styleName.Count == 0)
+                {
+                    _queryParameters.Add(string.Format("styleName={0}", System.Uri.EscapeDataString(string.Empty)));
+                }
+                else
+                {
+                    foreach (var _item in styleName)
+                    {
+                        _queryParameters.Add(string.Format("styleName={0}", System.Uri.EscapeDataString("" + _item)));
                     }
                 }
             }

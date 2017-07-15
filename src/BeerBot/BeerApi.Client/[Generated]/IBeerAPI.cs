@@ -37,9 +37,17 @@ namespace BeerBot.BeerApi.Client
         /// </param>
         /// <param name='breweryId'>
         /// </param>
+        /// <param name='breweryName'>
+        /// </param>
+        /// <param name='country'>
+        /// </param>
         /// <param name='categoryId'>
         /// </param>
+        /// <param name='categoryName'>
+        /// </param>
         /// <param name='styleId'>
+        /// </param>
+        /// <param name='styleName'>
         /// </param>
         /// <param name='minAbv'>
         /// </param>
@@ -51,7 +59,7 @@ namespace BeerBot.BeerApi.Client
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<IList<Beer>>> BeersGetWithHttpMessagesAsync(IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<int?> categoryId = default(IList<int?>), IList<int?> styleId = default(IList<int?>), double? minAbv = default(double?), double? maxAbv = default(double?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<IList<Beer>>> BeersGetWithHttpMessagesAsync(IList<string> searchTerm = default(IList<string>), IList<int?> breweryId = default(IList<int?>), IList<string> breweryName = default(IList<string>), IList<string> country = default(IList<string>), IList<int?> categoryId = default(IList<int?>), IList<string> categoryName = default(IList<string>), IList<int?> styleId = default(IList<int?>), IList<string> styleName = default(IList<string>), double? minAbv = default(double?), double? maxAbv = default(double?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <param name='id'>
         /// </param>

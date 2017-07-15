@@ -24,7 +24,8 @@ namespace BeerBot.Controllers
             switch (activity.GetActivityType())
             {
                 case ActivityTypes.Message:
-                    await Conversation.SendAsync(activity, () => new RootDialog());
+                    //await Conversation.SendAsync(activity, () => new RootDialog());
+                    await Conversation.SendAsync(activity, () => new RootLuisDialog());
                     break;
                 case ActivityTypes.ConversationUpdate:
                     await HandleConversationUpdate(activity);

@@ -18,41 +18,67 @@ namespace BeerBot.Dialogs
         private static readonly IBeerAPI BeerApiClient = new BeerAPI(new Uri(ConfigurationManager.AppSettings["BeerApiUrl"]));
         private static readonly IImageSearchService ImageSearchService = new ImageSearchService();
 
-        public static readonly IDialog<Beer> Dialog = Chain
-            .From(() => new PromptDialog.PromptChoice<RecommendationOptions>(
-                new[] { RecommendationOptions.Category, RecommendationOptions.Origin, RecommendationOptions.Name }, 
-                "How would you like me to recommend your beer?", 
-                "Not sure I got it. Could you try again?",
-                3, descriptions: new [] { "By Beer Category" , "By Beer Origin", "By Beer Name" }))
-            .Switch(
-                Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Category, (context, option) => CategoryRecommendation),
-                Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Origin, (context, option) => CountryRecommendation),
-                Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Name, (context, option) => NameRecommendation)
-            )
-            .Unwrap()
-            .ContinueWith(async (context, beerAwaitable) =>
+        public static IDialog<Beer> CreateDialog(string beerName, string brewery, string category, string country)
+        {
+            IDialog<Beer> dialog;
+            if (beerName == null && brewery == null && category == null && country == null)
             {
+                dialog = Chain
+                    .From(() => new PromptDialog.PromptChoice<RecommendationOptions>(
+                        new[] { RecommendationOptions.Category, RecommendationOptions.Origin, RecommendationOptions.Name },
+                        "How would you like me to recommend your beer?",
+                        "Not sure I got it. Could you try again?",
+                        3, descriptions: new[] { "By Beer Category", "By Beer Origin", "By Beer Name" }))
+                    .Switch(
+                        Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Category, (context, option) => CategoryRecommendation),
+                        Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Origin, (context, option) => CountryRecommendation),
+                        Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Name, (context, option) => NameRecommendation)
+                    )
+                    .Unwrap();
+            }
+            else
+            {
+                dialog = Chain.Return(new RecommendationFilter { BeerName = beerName, Brewery = brewery, Category = category, Country = country})
+                    .ContinueWith(
+                    (context, awaitable) => ChooseBeer(context, awaitable, async filter => await BeerApiClient.BeersGetAsync(filter.BeerName, filter.Brewery, filter.Category, filter.Country), null));
+            }
+
+            return dialog.ContinueWith(async (context, beerAwaitable) =>
+            {
+                var chosenBeer = await beerAwaitable;
+                if (chosenBeer == null)
+                    return Chain.Return<Beer>(null);
+
                 var typingMessage = context.MakeMessage();
                 typingMessage.Type = ActivityTypes.Typing;
                 await context.PostAsync(typingMessage);
                 await Task.Delay(1000);   // Make it look like we're typing a lot
 
-                var chosenBeer = await beerAwaitable;
                 Uri imageUrl = await ImageSearchService.SearchImage($"{chosenBeer.Name} beer");
                 var card = new HeroCard("Your beer!", chosenBeer.Name, chosenBeer.Description, new List<CardImage> { new CardImage(imageUrl.ToString()) });
 
                 var message = context.MakeMessage();
                 message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                message.Attachments = new List<Attachment> {card.ToAttachment()};
+                message.Attachments = new List<Attachment> { card.ToAttachment() };
                 await context.PostAsync(message);
                 return Chain.Return(chosenBeer);
             });
+        }
 
         private enum RecommendationOptions
         {
             Category = 1,
             Origin,
             Name
+        }
+
+        [Serializable]
+        private class RecommendationFilter
+        {
+            public string BeerName { get; set; }
+            public string Brewery { get; set; }
+            public string Category { get; set; }
+            public string Country { get; set; }
         }
 
         private static readonly IDialog<Beer> CategoryRecommendation = Chain
@@ -103,7 +129,7 @@ namespace BeerBot.Dialogs
             {
                 case 0:
                     await context.PostAsync("Oops! I havn't found any beer!");
-                    return retryDialog;
+                    return retryDialog ?? Chain.Return<Beer>(null);
                 case 1:
                     await context.PostAsync("Eureka! I've got a beer for you");
                     return Chain.Return(recommendation[0]);

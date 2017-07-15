@@ -70,7 +70,7 @@ namespace BeerBot.Dialogs
             }
             if (Regex.IsMatch(message.Text, ".*recommend.*", RegexOptions.IgnoreCase))
             {
-                context.Call(RecommendationDialog.Dialog, BeerRecommendedAsync);
+                context.Call(RecommendationDialog.CreateDialog(null, null, null, null), BeerRecommendedAsync);
                 return;
             }
             if (Regex.IsMatch(message.Text, "^help.*", RegexOptions.IgnoreCase))
