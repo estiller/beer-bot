@@ -7,16 +7,13 @@ using System.Threading.Tasks;
 using BeerBot.BeerApi.Client;
 using BeerBot.BeerApi.Client.Models;
 using BeerBot.Extensions;
-using BeerBot.Services;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
 
 namespace BeerBot.Dialogs
 {
     public static class RecommendationDialog
     {
         private static readonly IBeerAPI BeerApiClient = new BeerAPI(new Uri(ConfigurationManager.AppSettings["BeerApiUrl"]));
-        private static readonly IImageSearchService ImageSearchService = new ImageSearchService();
 
         public static IDialog<Beer> CreateDialog(string beerName, string brewery, string category, string country)
         {
@@ -24,11 +21,13 @@ namespace BeerBot.Dialogs
             if (beerName == null && brewery == null && category == null && country == null)
             {
                 dialog = Chain
-                    .From(() => new PromptDialog.PromptChoice<RecommendationOptions>(
-                        new[] { RecommendationOptions.Category, RecommendationOptions.Origin, RecommendationOptions.Name },
-                        "How would you like me to recommend your beer?",
-                        "Not sure I got it. Could you try again?",
-                        3, descriptions: new[] { "By Beer Category", "By Beer Origin", "By Beer Name" }))
+                    .From(() => new PromptDialog.PromptChoice<RecommendationOptions>(new PromptOptions<RecommendationOptions>(
+                        "How would you like me to recommend your beer?", 
+                        "Not sure I got it. Could you try again?", 
+                        options: new[] { RecommendationOptions.Category, RecommendationOptions.Origin, RecommendationOptions.Name },
+                        descriptions: new[] { "By Beer Category", "By Beer Origin", "By Beer Name" }, 
+                        speak: "How would you like me to recommend your beer? By category, by origin, or by name?", 
+                        retrySpeak: "Not sure I got it. Could you try again?")))
                     .Switch(
                         Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Category, (context, option) => CategoryRecommendation),
                         Chain.Case<RecommendationOptions, IDialog<Beer>>(option => option == RecommendationOptions.Origin, (context, option) => CountryRecommendation),
@@ -43,26 +42,7 @@ namespace BeerBot.Dialogs
                     (context, awaitable) => ChooseBeer(context, awaitable, async filter => await BeerApiClient.BeersGetAsync(filter.BeerName, filter.Brewery, filter.Category, filter.Country), null));
             }
 
-            return dialog.ContinueWith(async (context, beerAwaitable) =>
-            {
-                var chosenBeer = await beerAwaitable;
-                if (chosenBeer == null)
-                    return Chain.Return<Beer>(null);
-
-                var typingMessage = context.MakeMessage();
-                typingMessage.Type = ActivityTypes.Typing;
-                await context.PostAsync(typingMessage);
-                await Task.Delay(1000);   // Make it look like we're typing a lot
-
-                Uri imageUrl = await ImageSearchService.SearchImage($"{chosenBeer.Name} beer");
-                var card = new HeroCard("Your beer!", chosenBeer.Name, chosenBeer.Description, new List<CardImage> { new CardImage(imageUrl.ToString()) });
-
-                var message = context.MakeMessage();
-                message.AttachmentLayout = AttachmentLayoutTypes.Carousel;
-                message.Attachments = new List<Attachment> { card.ToAttachment() };
-                await context.PostAsync(message);
-                return Chain.Return(chosenBeer);
-            });
+            return dialog.ContinueWith(async (context, beerAwaitable) => Chain.Return(await beerAwaitable));
         }
 
         private enum RecommendationOptions
@@ -84,28 +64,45 @@ namespace BeerBot.Dialogs
         private static readonly IDialog<Beer> CategoryRecommendation = Chain
             .From(() =>
             {
-                var categories = BeerApiClient.CategoriesGet();
-                return new PromptDialog.PromptChoice<Category>(categories, "Which kind of beer do you like?", "I probably drank too much. Which beer type was it?", 3);
+                var categories = BeerApiClient.CategoriesGet().ToArray();
+                return new PromptDialog.PromptChoice<Category>(new PromptOptions<Category>(
+                    "Which kind of beer do you like?", 
+                    "I probably drank too much. Which beer type was it?", 
+                    options: categories, 
+                    speak: "Which kind of beer do you like?", 
+                    retrySpeak: "I probably drank too much. Which beer type was it?"));
             })
             .ContinueWith<Category, Style>(async (context, categoryAwaitable) =>
             {
                 var category = await categoryAwaitable;
-                var styles = await BeerApiClient.StylesGetByCategoryAsync(category.Id);
-                return new PromptDialog.PromptChoice<Style>(styles, "Which style?", "I probably drank too much. Which style was it?", 3);
+                var styles = (await BeerApiClient.StylesGetByCategoryAsync(category.Id)).ToArray();
+                return new PromptDialog.PromptChoice<Style>(new PromptOptions<Style>(
+                    "Which style?",
+                    "I probably drank too much. Which style was it?",
+                    options: styles,
+                    speak: "Which style?",
+                    retrySpeak: "I probably drank too much. Which style was it?"));
             })
             .ContinueWith((context, styleAwaitable) => ChooseBeer(context, styleAwaitable, async style => await BeerApiClient.BeersGetByStyleAsync(style.Id), CategoryRecommendation));
 
         private static readonly IDialog<Beer> CountryRecommendation = Chain
             .From(() =>
             {
-                var countries = BeerApiClient.BreweriesCountriesGet().Random(5).ToList();
-                return new PromptDialog.PromptChoice<string>(countries, "Where would you like your beer from?", "I probably drank too much. Where would you like your beer from?", 3);
+                var countries = BeerApiClient.BreweriesCountriesGet().Random(5).ToArray();
+                return new PromptDialog.PromptChoice<string>(new PromptOptions<string>(
+                    "Where would you like your beer from?",
+                    "I probably drank too much. Where would you like your beer from?",
+                    options: countries,
+                    speak: "Where would you like your beer from?",
+                    retrySpeak: "I probably drank too much. Where would you like your beer from?"));
             })
             .ContinueWith(ChooseBrewery)
             .ContinueWith((context, breweryAwaitable) => ChooseBeer(context, breweryAwaitable, async brewery => await BeerApiClient.BeersGetByBreweryAsync(brewery.Id), CountryRecommendation));
 
         private static readonly IDialog<Beer> NameRecommendation = Chain
-            .From(() => new PromptDialog.PromptString("Do you remember the name? Give me what you remember", "I probably drank too much. What was the name?", 3))
+            .From(() => new PromptDialog.PromptString(new PromptOptions<string>(
+                "Do you remember the name? Give me what you remember", "I probably drank too much. What was the name?", 
+                speak: "Do you remember the name? Give me what you remember", retrySpeak: "I probably drank too much. What was the name?")))
             .ContinueWith((context, termAwaitable) => ChooseBeer(context, termAwaitable, async searchTerm => await BeerApiClient.BeersGetBySearchTermAsync(searchTerm), NameRecommendation));
 
         private static async Task<IDialog<Brewery>> ChooseBrewery(IBotContext context, IAwaitable<string> countryAwaitable)
@@ -118,7 +115,8 @@ namespace BeerBot.Dialogs
                 await context.SpeakAsync($"Then you need a beer made by {breweries[0].Name}");
                 return Chain.Return(breweries[0]);
             }
-            return new PromptDialog.PromptChoice<Brewery>(breweries, "Which brewery?", "I probably drank too much. Which brewery was it?", 3);
+            return new PromptDialog.PromptChoice<Brewery>(new PromptOptions<Brewery>(
+                "Which brewery?", "I probably drank too much. Which brewery was it?", options: breweries, speak: "Which brewery?", retrySpeak: "I probably drank too much. Which brewery was it?"));
         }
 
         private static async Task<IDialog<Beer>> ChooseBeer<T>(IBotContext context, IAwaitable<T> awaitableArgument, Func<T, Task<IEnumerable<Beer>>> beerSelector, IDialog<Beer> retryDialog)
@@ -134,7 +132,9 @@ namespace BeerBot.Dialogs
                     await context.SpeakAsync("Eureka! I've got a beer for you");
                     return Chain.Return(recommendation[0]);
                 default:
-                    return new PromptDialog.PromptChoice<Beer>(recommendation, "Which one of these works?", "I probably drank too much. Which one of these work?", 3);
+                    return new PromptDialog.PromptChoice<Beer>(new PromptOptions<Beer>(
+                        "Which one of these works?", "I probably drank too much. Which one of these work?", options: recommendation,
+                        speak: "Which one of these works?", retrySpeak: "I probably drank too much. Which one of these work?"));
             }
         }
     }

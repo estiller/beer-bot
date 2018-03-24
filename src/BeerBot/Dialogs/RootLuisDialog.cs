@@ -66,7 +66,7 @@ namespace BeerBot.Dialogs
         {
             if (context.UserData.TryGetValue(LastBeerOrderedKeyName, out string beerName))
             {
-                PromptDialog.Confirm(context, ConfirmOrderLastKnownBeerAsync, $"Would you like to order your usual {beerName}?");
+                PromptDialog.Confirm(context, ConfirmOrderLastKnownBeerAsync, new PromptOptions<string>($"Would you like to order your usual {beerName}?", speak: $"Would you like to order your usual {beerName}?"));
             }
             else
             {
@@ -132,7 +132,7 @@ namespace BeerBot.Dialogs
             }
 
             // Can't use anonymous method as anonymous method which capture environment artifacts are not serializable
-            PromptDialog.Confirm(context, CompleteBeerRecommendationAsync, $"Would you like to order '{_recommendedBeer.Name}'?", InputHints.ExpectingInput);
+            PromptDialog.Confirm(context, CompleteBeerRecommendationAsync, new PromptOptions<string>($"Would you like to order '{_recommendedBeer.Name}'?", speak: $"Would you like to order '{_recommendedBeer.Name}'?"));
         }
 
         private async Task CompleteBeerRecommendationAsync(IDialogContext context, IAwaitable<bool> shouldOrder)
