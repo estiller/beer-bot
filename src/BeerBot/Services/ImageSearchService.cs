@@ -9,7 +9,7 @@ namespace BeerBot.Services
     internal class ImageSearchService : IImageSearchService
     {
         private static readonly string ApiKey = ConfigurationManager.AppSettings["Cognitive_BingImageSearch_ApiKey"];
-        private static readonly string ApiRootUrl = "https://api.cognitive.microsoft.com/bing/v5.0/images/search";
+        private static readonly string ApiRootUrl = "https://api.cognitive.microsoft.com/bing/v7.0/images/search";
 
         private readonly HttpClient _httpClient = CreateHttpClient();
 
