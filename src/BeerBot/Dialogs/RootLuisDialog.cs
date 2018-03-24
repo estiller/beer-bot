@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +9,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Luis;
 using Microsoft.Bot.Builder.Luis.Models;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json.Linq;
 
 namespace BeerBot.Dialogs
 {
@@ -154,7 +154,7 @@ namespace BeerBot.Dialogs
             var entityRecommendation = luisResult.Entities.FirstOrDefault(e => e.Type == entityName);
             object resolvedValue = null;
             return entityRecommendation?.Resolution?.TryGetValue("values", out resolvedValue) == true 
-                ? ((JArray) resolvedValue)[0].ToString() 
+                ? ((List<object>) resolvedValue)[0].ToString() 
                 : entityRecommendation?.Entity;
         }
     }
