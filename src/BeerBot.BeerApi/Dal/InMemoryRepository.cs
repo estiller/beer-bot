@@ -36,6 +36,7 @@ namespace BeerBot.BeerApi.Dal
             using (var reader = new StreamReader(stream))
             {
                 var csv = new CsvReader(reader);
+                csv.Configuration.BadDataFound = null;
                 return csv.GetRecords<T>().OrderBy(idSelector).ToArray();
             }
         }
